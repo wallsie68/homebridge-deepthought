@@ -53,7 +53,7 @@ function DeepthoughtAccessory(log, config) {
         statusemitter.on("statuspoll", function(data) {       
             var binaryState = parseInt(data.replace(/\D/g,""));
             that.state = binaryState > 0;
-            that.log(that.service, "polled status",that.status_url, "state is currently", binaryState); 
+            that.log(that.service, "polled status",that.status_url, "state is currently", binaryState, that.state); 
 			
             // switch used to easily add additonal services
             that.enableSet = false;
@@ -64,15 +64,15 @@ function DeepthoughtAccessory(log, config) {
                         .setValue(that.state);
                     }
                     break;
-                case "Light":
+                case "Lightbulb":
                     if (that.lightbulbService) {
                         that.lightbulbService.getCharacteristic(Characteristic.On)
                         .setValue(that.state);
                     }		
                     break;			
-                case "Temperature":
-                    if (that.temperatureSensorService) {
-                        that.temperatureSensorService.getCharacteristic(Characteristic.CurrentTemperature)
+                case "MotionSensor":
+                    if (that.motionSensorService) {
+                        that.motionSensorService.getCharacteristic(Characteristic.MotionDetected)
                         .setValue(that.state);
                     }		
                     break;			
@@ -108,6 +108,16 @@ function DeepthoughtAccessory(log, config) {
             if (that.temperatureSensorService) {				
             that.log(that.service, "polled temperature level", that.getlevel_url, "level is currently", that.currentlevel); 		        
                 that.temperatureSensorService.getCharacteristic(Characteristic.CurrentTemperature)
+                .setValue(that.currentlevel);
+            }   
+            if (that.lightSensorService) {				
+            that.log(that.service, "polled light level", that.getlevel_url, "level is currently", that.currentlevel); 		        
+                that.lightSensorService.getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                .setValue(that.currentlevel);
+            }   
+            if (that.humiditySensorService) {				
+            that.log(that.service, "polled humidity level", that.getlevel_url, "level is currently", that.currentlevel); 		        
+                that.humiditySensorService.getCharacteristic(Characteristic.CurrentRelativeHumidity)
                 .setValue(that.currentlevel);
             }   
             that.enableSet = true;
@@ -284,10 +294,11 @@ DeepthoughtAccessory.prototype = {
                         .on('set', this.setPowerState.bind(this));					
                         break;
                 }
-                return [this.switchService];
-            case "Light":	
+                return [informationService, this.switchService];
+                break;
+            case "Lightbulb":	
                 informationService
-                    .setCharacteristic(Characteristic.Model, "Lamp")
+                    .setCharacteristic(Characteristic.Model, "Lightbulb")
                     .setCharacteristic(Characteristic.SerialNumber, "WALLS00003");
                 this.lightbulbService = new Service.Lightbulb(this.name);			
                 switch (this.statusHandling) {
@@ -327,9 +338,9 @@ DeepthoughtAccessory.prototype = {
                 return [informationService, this.lightbulbService];
                 break;		
                 
-            case "Temperature":	
+            case "TemperatureSensor":	
                 informationService
-                    .setCharacteristic(Characteristic.Model, "Temperature")
+                    .setCharacteristic(Characteristic.Model, "TemperatureSensor")
                     .setCharacteristic(Characteristic.SerialNumber, "WALLS00004");
                 this.temperatureSensorService = new Service.TemperatureSensor(this.name);			
                     
@@ -349,7 +360,74 @@ DeepthoughtAccessory.prototype = {
                 }
 	
                 return [informationService, this.temperatureSensorService];
-                break;		
+                break;
+                
+            case "MotionSensor": 
+                informationService
+                    .setCharacteristic(Characteristic.Model, "MotionSensor")
+                    .setCharacteristic(Characteristic.SerialNumber, "WALLS00005");
+                this.motionSensorService = new Service.MotionSensor(this.name);
+                switch (this.statusHandling) {	
+                    //Status Polling			
+                    case "yes":					
+                        this.motionSensorService
+                        .getCharacteristic(Characteristic.MotionDetected)
+                        .on('get', this.getPowerState.bind(this))
+                        break;
+                    case "realtime":				
+                        this.motionSensorService
+                        .getCharacteristic(Characteristic.MotionDetected)
+                        .on('get', function(callback) {callback(null, that.state)})
+                        break;
+                    default	:	
+                        this.motionSensorService
+                        .getCharacteristic(Characteristic.MotionDetected)	
+                        .on('get', this.setPowerState.bind(this));					
+                        break;
+                }
+                return [informationService, this.motionSensorService];
+                break;
+                
+            case "LightSensor":	
+                informationService
+                    .setCharacteristic(Characteristic.Model, "LightSensor")
+                    .setCharacteristic(Characteristic.SerialNumber, "WALLS00006");
+                this.lightSensorService = new Service.LightSensor(this.name);			
+                    
+                // Level Polling 
+                if (this.levelHandling == "realtime") {
+                    this.lightSensorService 
+                    .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                    .on('get', function(callback) {callback(null, that.currentlevel)})
+                } else if (this.levelHandling == "yes") {
+                    this.lightSensorService
+                    .getCharacteristic(Characteristic.CurrentAmbientLightLevel)
+                    .on('get', this.getLevel.bind(this))
+                }
+	
+                return [informationService, this.lightSensorService];
+                break;                
+
+            case "HumiditySensor":	
+                informationService
+                    .setCharacteristic(Characteristic.Model, "HumiditySensor")
+                    .setCharacteristic(Characteristic.SerialNumber, "WALLS00007");
+                this.humiditySensorService = new Service.HumiditySensor(this.name);			
+                    
+                // Level Polling 
+                if (this.levelHandling == "realtime") {
+                    this.humiditySensorService 
+                    .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                    .on('get', function(callback) {callback(null, that.currentlevel)})
+                } else if (this.levelHandling == "yes") {
+                    this.humiditySensorService
+                    .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                    .on('get', this.getLevel.bind(this))
+                }
+	
+                return [informationService, this.humiditySensorService];
+                break;                
+
         }
     }
 };

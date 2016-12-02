@@ -1,22 +1,21 @@
 {
-    "bridge": {
-        "name": "Homebridge",
-        "username": "CC:22:3D:E3:CE:30",
-        "port": 51826,
-        "pin": "031-45-154",
+     "bridge":{
+        "name": "HomeBridge-Dev",
+        "username": "CC:22:3D:E3:CE:33",
+        "port": 51830,
+        "pin": "012-34-567",
         "model": "DeepThought",
         "manufacturer": "The Walls Family",
         "serialNumber": "WALLS00001"
     },
     
-    "description": "DeepThough HomeBridge",
+    "description": "DeepThough Development HomeBridge",
     
     "accessories": [
-
         {
             "accessory": "Deepthought",
-            "name": "Switch",
-            "service": "Switch",
+            "service": "Lightbulb",
+            "name": "Lightbulb",
             "on_url": "http://10.0.1.4/automation/power.php?e=Q",
             "off_url": "http://10.0.1.4/automation/power.php?e=U",
             "status_url": "http://10.0.1.4/automation/status.php?e=Q",
@@ -25,21 +24,45 @@
         },
         {
             "accessory": "Deepthought",
-            "name": "Lamp",
-            "service": "Light",
-            "on_url": "http://10.0.1.4/automation/power.php?e=I",
-            "off_url": "http://10.0.1.4/automation/power.php?e=M",
-            "status_url": "http://10.0.1.4/automation/status.php?e=I",
+            "name": "Switch",
+            "service": "Switch",
+            "on_url": "http://10.0.1.4/automation/power.php?e=R",
+            "off_url": "http://10.0.1.4/automation/power.php?e=V",
+            "status_url": "http://10.0.1.4/automation/status.php?e=R",
             "statusHandling": "realtime",
             "http_method": "GET"
         },
         {
             "accessory": "Deepthought",
-            "name": "Outside Temperature",
-            "service": "Temperature",
-            "getlevel_url": "http://10.0.1.4/weather/temperature.php",
+            "name": "Temperature Sensor",
+            "service": "TemperatureSensor",
+            "getlevel_url": "http://10.0.1.4/automation/temperatureJSON.php?r=PL",
+            "levelHandling": "realtime",
+            "http_method": "GET"
+        },
+        {
+            "accessory": "Deepthought",
+            "name": "Motion Sensor",
+            "service": "MotionSensor",
+            "status_url": "http://10.0.1.4/automation/motionJSON.php?r=PL",
+            "statusHandling": "realtime",
+            "http_method": "GET"
+        },
+        {
+            "accessory": "Deepthought",
+            "name": "Light Sensor",
+            "service": "LightSensor",
+            "getlevel_url": "http://10.0.1.4/automation/lightJSON.php?r=PL",
+            "levelHandling": "realtime",
+            "http_method": "GET"
+        },
+        {
+            "accessory": "Deepthought",
+            "name": "Humidity Sensor",
+            "service": "HumiditySensor",
+            "getlevel_url": "http://10.0.1.4/automation/humidityJSON.php?r=PL",
             "levelHandling": "realtime",
             "http_method": "GET"
         }
-  ]
+    ]
 }
