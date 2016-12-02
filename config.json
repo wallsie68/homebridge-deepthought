@@ -1,0 +1,45 @@
+{
+    "bridge": {
+        "name": "Homebridge",
+        "username": "CC:22:3D:E3:CE:30",
+        "port": 51826,
+        "pin": "031-45-154",
+        "model": "DeepThought",
+        "manufacturer": "The Walls Family",
+        "serialNumber": "WALLS00001"
+    },
+    
+    "description": "DeepThough HomeBridge",
+    
+    "accessories": [
+
+        {
+            "accessory": "Deepthought",
+            "name": "Switch",
+            "service": "Switch",
+            "on_url": "http://10.0.1.4/automation/power.php?e=Q",
+            "off_url": "http://10.0.1.4/automation/power.php?e=U",
+            "status_url": "http://10.0.1.4/automation/status.php?e=Q",
+            "statusHandling": "realtime",
+            "http_method": "GET"
+        },
+        {
+            "accessory": "Deepthought",
+            "name": "Lamp",
+            "service": "Light",
+            "on_url": "http://10.0.1.4/automation/power.php?e=I",
+            "off_url": "http://10.0.1.4/automation/power.php?e=M",
+            "status_url": "http://10.0.1.4/automation/status.php?e=I",
+            "statusHandling": "realtime",
+            "http_method": "GET"
+        },
+        {
+            "accessory": "Deepthought",
+            "name": "Outside Temperature",
+            "service": "Temperature",
+            "getlevel_url": "http://10.0.1.4/weather/temperature.php",
+            "levelHandling": "realtime",
+            "http_method": "GET"
+        }
+  ]
+}
