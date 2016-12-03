@@ -76,6 +76,12 @@ function DeepthoughtAccessory(log, config) {
                         .setValue(that.state);
                     }		
                     break;			
+                case "OccupancySensor":
+                    if (that.occupancySensorService) {
+                        that.occupancySensorService.getCharacteristic(Characteristic.OccupancyDetected)
+                        .setValue(that.state);
+                    }		
+                    break;			
             }
             that.enableSet = true;   
 	});
@@ -427,6 +433,32 @@ DeepthoughtAccessory.prototype = {
 	
                 return [informationService, this.humiditySensorService];
                 break;                
+
+            case "OccupancySensor": 
+                informationService
+                    .setCharacteristic(Characteristic.Model, "OccupancySensor")
+                    .setCharacteristic(Characteristic.SerialNumber, "WALLS00008");
+                this.occupancySensorService = new Service.OccupancySensor(this.name);
+                switch (this.statusHandling) {	
+                    //Status Polling			
+                    case "yes":					
+                        this.occupancySensorService
+                        .getCharacteristic(Characteristic.OccupancyDetected)
+                        .on('get', this.getPowerState.bind(this))
+                        break;
+                    case "realtime":				
+                        this.occupancySensorService
+                        .getCharacteristic(Characteristic.OccupancyDetected)
+                        .on('get', function(callback) {callback(null, that.state)})
+                        break;
+                    default	:	
+                        this.occupancySensorService
+                        .getCharacteristic(Characteristic.OccupancyDetected)	
+                        .on('get', this.setPowerState.bind(this));					
+                        break;
+                }
+                return [informationService, this.occupancySensorService];
+                break;
 
         }
     }

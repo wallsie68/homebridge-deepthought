@@ -63,6 +63,14 @@
             "getlevel_url": "http://10.0.1.4/automation/humidityJSON.php?r=PL",
             "levelHandling": "realtime",
             "http_method": "GET"
+        },
+        {
+            "accessory": "Deepthought",
+            "name": "Occupancy Sensor",
+            "service": "OccupancySensor",
+            "status_url": "http://10.0.1.4/automation/occupancyJSON.php?r=PL",
+            "statusHandling": "realtime",
+            "http_method": "GET"
         }
     ]
 }
